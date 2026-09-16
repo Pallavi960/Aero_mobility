@@ -1,0 +1,13 @@
+{
+  "model_type": "GRU",
+  "history_hours": 72,
+  "forecast_hours": 24,
+  "input_features": 65,
+  "target": "AQI",
+  "framework": "TensorFlow/Keras",
+  "loss": "MSE",
+  "training_status": "current_model_before_retraining",
+  "test_mae": 35.31953430175781,
+  "test_rmse": 49.4331663911298,
+  "test_r2": 0.8627750873565674
+}
