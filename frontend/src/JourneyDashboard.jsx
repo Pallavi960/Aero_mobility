@@ -1,30 +1,234 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { API, GOOGLE_MAPS_KEY, PROFILES } from "./constants/appConstants";
+import { useGoogleMaps } from "./hooks/useGoogleMaps";
+import { HeaderNavbar, MobileBottomNav } from "./components/common/Navbar";
+import HomeScreen from "./components/screens/HomeScreen";
+import HistoryScreen from "./components/screens/HistoryScreen";
+import DedicatedMapScreen from "./components/screens/DedicatedMapScreen";
+import ProfileScreen from "./components/screens/ProfileScreen";
+import AboutScreen from "./components/screens/AboutScreen";
+import ChatAssistant from "./components/chat/ChatAssistant";
 
-const API = "http://127.0.0.1:5000";
-const PROFILES = [["general", "General"], ["respiratory", "Asthma / Respiratory Sensitivity"], ["cardiovascular", "Cardiovascular Sensitivity"], ["elderly", "Elderly"], ["child", "Child"]];
-const CENTER = { lat: 28.6139, lng: 77.209 };
+export default function JourneyDashboard({ user: initialUser, onLogout, initialTab = "home", initialHealthProfile = "general" }) {
+  const [currentUser, setCurrentUser] = useState(initialUser);
 
-function decode(encoded = "") { const out = []; let i = 0, lat = 0, lng = 0; while (i < encoded.length) { let r = 0, s = 0, b; do { b = encoded.charCodeAt(i++) - 63; r |= (b & 31) << s; s += 5; } while (b >= 32); lat += r & 1 ? ~(r >> 1) : r >> 1; r = 0; s = 0; do { b = encoded.charCodeAt(i++) - 63; r |= (b & 31) << s; s += 5; } while (b >= 32); lng += r & 1 ? ~(r >> 1) : r >> 1; out.push({ lat: lat / 1e5, lng: lng / 1e5 }); } return out; }
-function value(number, suffix = "") { return number === undefined || number === null ? "--" : `${number}${suffix}`; }
+  useEffect(() => {
+    setCurrentUser(initialUser);
+  }, [initialUser]);
 
-function StationPicker({ label, text, setText, choose }) {
-  const [items, setItems] = useState([]), [open, setOpen] = useState(false), [message, setMessage] = useState("");
-  useEffect(() => { if (!open) return; const controller = new AbortController(); const timer = setTimeout(async () => { try { const query = new URLSearchParams({ query: text, limit: "8" }); const result = await fetch(`${API}/api/aqi/stations?${query}`, { signal: controller.signal }); const data = await result.json(); setItems(data.stations || []); setMessage(""); } catch (error) { if (error.name !== "AbortError") { setItems([]); setMessage("Start the Flask backend to search stations."); } } }, 160); return () => { clearTimeout(timer); controller.abort(); }; }, [text, open]);
-  return <div className="station-search"><input value={text} placeholder={`Search ${label} station`} onFocus={() => setOpen(true)} onBlur={() => setTimeout(() => setOpen(false), 150)} onChange={(event) => { setText(event.target.value); setOpen(true); }} />{open && <div className="station-menu">{message && <p className="station-menu-status">{message}</p>}{!message && !items.length && <p className="station-menu-status">Try Delhi or a Delhi station name.</p>}{items.map((item) => <button key={item.station_id} type="button" className="station-option" onMouseDown={(event) => event.preventDefault()} onClick={() => { choose(item); setOpen(false); }}><span className="station-option-name">{item.station_name}</span><span className="station-option-location">{item.city}, {item.state}</span></button>)}</div>}</div>;
+  // Main navigation tabs; profile details open from the header avatar.
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  // Health Profile state
+  const [healthProfile, setHealthProfile] = useState(
+    PROFILES.some((profile) => profile.id === initialHealthProfile) ? initialHealthProfile : "general"
+  );
+
+  // Origin & Destination state
+  const [origin, setOrigin] = useState({
+    station_id: "site_301",
+    station_name: "Anand Vihar, Delhi - DPCC",
+    latitude: 28.6508,
+    longitude: 77.3152,
+    city: "Delhi",
+  });
+  const [destination, setDestination] = useState({
+    station_id: "site_304",
+    station_name: "Bawana, Delhi - DPCC",
+    latitude: 28.7762,
+    longitude: 77.0510,
+    city: "Delhi",
+  });
+  const [originText, setOriginText] = useState("Anand Vihar, Delhi - DPCC");
+  const [destinationText, setDestinationText] = useState("Bawana, Delhi - DPCC");
+
+  // Search Results state
+  const [routesData, setRoutesData] = useState(null);
+  const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [loadingRoutes, setLoadingRoutes] = useState(false);
+  const [routeError, setRouteError] = useState("");
+
+  // Google Maps SDK Loader
+  const { loaded: mapsLoaded } = useGoogleMaps(GOOGLE_MAPS_KEY);
+
+  // Trigger Route Search
+  const handleFindRoutes = async (
+    overrideOrigin = origin,
+    overrideDest = destination,
+    overrideProfile = healthProfile
+  ) => {
+    if (!overrideOrigin?.latitude || !overrideDest?.latitude) {
+      setRouteError("Please select both an origin and destination station.");
+      return;
+    }
+
+    setLoadingRoutes(true);
+    setRouteError("");
+    setActiveTab("home");
+
+    try {
+      const q = new URLSearchParams({
+        origin_lat: overrideOrigin.latitude,
+        origin_lng: overrideOrigin.longitude,
+        destination_lat: overrideDest.latitude,
+        destination_lng: overrideDest.longitude,
+        health_profile: overrideProfile,
+        origin_name: overrideOrigin.station_name || overrideOrigin.name || "Origin",
+        destination_name: overrideDest.station_name || overrideDest.name || "Destination",
+      });
+
+      const res = await fetch(`${API}/api/routes/find?${q}`);
+      const data = await res.json();
+
+      if (data.success && data.routes && data.routes.length > 0) {
+        setRoutesData(data);
+        setSelectedRouteId(null);
+      } else {
+        setRouteError(data.error || "No route alternatives found for this path.");
+      }
+    } catch {
+      setRouteError("Unable to connect to route intelligence backend.");
+    } finally {
+      setLoadingRoutes(false);
+    }
+  };
+
+  // Location Autodetect
+  const handleUseLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(`${API}/api/aqi/nearest?latitude=${latitude}&longitude=${longitude}`);
+          const data = await res.json();
+          if (data.success && data.nearest_station) {
+            const st = data.nearest_station;
+            setOrigin(st);
+            setOriginText(`${st.station_name} (Current Location)`);
+          } else {
+            setOrigin({ latitude, longitude, station_name: "My Current GPS Location" });
+            setOriginText("My Current GPS Location");
+          }
+        } catch {
+          setOrigin({ latitude, longitude, station_name: "My Current GPS Location" });
+          setOriginText("My Current GPS Location");
+        }
+      },
+      () => {
+        alert("Location access denied or unavailable.");
+      }
+    );
+  };
+
+  // Recalculate trip from history
+  const handleRecalculateTrip = (trip) => {
+    if (!trip?.from || !trip?.to) return;
+    const fromStation = {
+      station_name: trip.from.name,
+      latitude: trip.from.latitude,
+      longitude: trip.from.longitude,
+    };
+    const toStation = {
+      station_name: trip.to.name,
+      latitude: trip.to.latitude,
+      longitude: trip.to.longitude,
+    };
+    const pId = trip.healthProfile?.id || "general";
+
+    setOrigin(fromStation);
+    setDestination(toStation);
+    setOriginText(trip.from.name);
+    setDestinationText(trip.to.name);
+    setHealthProfile(pId);
+
+    handleFindRoutes(fromStation, toStation, pId);
+  };
+
+  const activeProfileObj = PROFILES.find((p) => p.id === healthProfile) || PROFILES[0];
+
+  return (
+    <div className="app-shell min-h-screen bg-[#f4f7f2] text-[#17352b] flex flex-col font-sans selection:bg-[#168b62] selection:text-white">
+      {/* ── TOP NAVBAR ── */}
+      <HeaderNavbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        activeProfileObj={activeProfileObj}
+        currentUser={currentUser}
+      />
+
+      {/* ── MAIN BODY CONTENT ── */}
+      <main className="app-content flex-1 w-full">
+        {/* TAB 1: HOME (PLANNER ON LEFT, MAP ON RIGHT, DETAILS BELOW) */}
+        {activeTab === "home" && (
+          <HomeScreen
+            origin={origin}
+            setOrigin={setOrigin}
+            originText={originText}
+            setOriginText={setOriginText}
+            destination={destination}
+            setDestination={setDestination}
+            destinationText={destinationText}
+            setDestinationText={setDestinationText}
+            healthProfile={healthProfile}
+            setHealthProfile={setHealthProfile}
+            activeProfileObj={activeProfileObj}
+            routesData={routesData}
+            selectedRouteId={selectedRouteId}
+            setSelectedRouteId={setSelectedRouteId}
+            loadingRoutes={loadingRoutes}
+            routeError={routeError}
+            mapsLoaded={mapsLoaded}
+            onFindRoutes={handleFindRoutes}
+            onUseLocation={handleUseLocation}
+          />
+        )}
+
+        {/* TAB 2: HISTORY */}
+        {activeTab === "history" && (
+          <HistoryScreen onRecalculateTrip={handleRecalculateTrip} />
+        )}
+
+        {/* TAB 3: DEDICATED MAP */}
+        {activeTab === "map" && (
+          <DedicatedMapScreen mapsLoaded={mapsLoaded} />
+        )}
+
+        {/* TAB 4: PROFILE */}
+        {activeTab === "profile" && (
+          <ProfileScreen
+            user={currentUser}
+            onUpdateUser={setCurrentUser}
+            activeProfile={healthProfile}
+            onSelectProfile={(p) => {
+              setHealthProfile(p);
+              if (routesData) {
+                handleFindRoutes(origin, destination, p);
+              }
+            }}
+            onLogout={onLogout}
+          />
+        )}
+
+        {activeTab === "about" && <AboutScreen onNavigateHome={() => setActiveTab("home")} />}
+      </main>
+
+      {/* ── MOBILE BOTTOM NAVIGATION ── */}
+      <MobileBottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      {/* ── AEROMOBILITY ASSISTANT CHATBOT ── */}
+      <ChatAssistant
+        origin={origin}
+        originText={originText}
+        destination={destination}
+        destinationText={destinationText}
+        healthProfile={healthProfile}
+        routesData={routesData}
+        activeTab={activeTab}
+      />
+    </div>
+  );
 }
-
-export default function JourneyDashboard() {
-  const el = useRef(null), map = useRef(null), drawings = useRef([]);
-  const [from, setFrom] = useState(""), [to, setTo] = useState(""), [fromPoint, setFromPoint] = useState(null), [toPoint, setToPoint] = useState(null), [profile, setProfile] = useState("general");
-  const [routes, setRoutes] = useState([]), [selected, setSelected] = useState(null), [recommended, setRecommended] = useState(null), [appliedProfile, setAppliedProfile] = useState(null), [error, setError] = useState(""), [loading, setLoading] = useState(false), [ready, setReady] = useState(false);
-  useEffect(() => { const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; if (!key) return setError("Add VITE_GOOGLE_MAPS_API_KEY to .env to display the map."); const script = document.createElement("script"); script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly`; script.async = true; script.onload = () => { if (!window.google?.maps?.Map) return setError("Enable Maps JavaScript API for this key."); map.current = new window.google.maps.Map(el.current, { center: CENTER, zoom: 11, mapTypeControl: false, streetViewControl: false, fullscreenControl: false }); setReady(true); }; script.onerror = () => setError("Google Maps could not be loaded."); document.head.appendChild(script); return () => script.remove(); }, []);
-  useEffect(() => { if (!map.current || !window.google) return; drawings.current.forEach((item) => item.setMap(null)); drawings.current = []; const bounds = new window.google.maps.LatLngBounds(); [fromPoint, toPoint].forEach((point, index) => { if (!point) return; const marker = new window.google.maps.Marker({ position: point, map: map.current, label: index ? "B" : "A" }); drawings.current.push(marker); bounds.extend(point); }); routes.forEach((route, index) => { const path = decode(route.polyline); path.forEach((point) => bounds.extend(point)); const active = route.route_id === selected; const colors = ["#168b62", "#2877c7", "#d58b22"]; const line = new window.google.maps.Polyline({ path, map: map.current, strokeColor: active ? "#0c6042" : colors[index], strokeWeight: active ? 7 : 4, strokeOpacity: active ? 1 : .68, zIndex: active ? 4 : 1 }); line.addListener("click", () => setSelected(route.route_id)); drawings.current.push(line); }); if (!bounds.isEmpty()) map.current.fitBounds(bounds, 56); }, [fromPoint, toPoint, routes, selected]);
-  const pick = (setter, pointSetter) => (station) => { setter(`${station.station_name}, ${station.city}`); pointSetter({ lat: station.latitude, lng: station.longitude }); };
-  const locate = () => navigator.geolocation?.getCurrentPosition(({ coords }) => { setFrom("Current location"); setFromPoint({ lat: coords.latitude, lng: coords.longitude }); }, () => setError("Location permission was not granted."));
-  const find = async (event) => { event.preventDefault(); if (!fromPoint || !toPoint) return setError("Select both journey stations first."); setLoading(true); setError(""); try { const query = new URLSearchParams({ origin_lat: fromPoint.lat, origin_lng: fromPoint.lng, destination_lat: toPoint.lat, destination_lng: toPoint.lng, health_profile: profile }); const response = await fetch(`${API}/api/routes/find?${query}`); const data = await response.json(); if (!response.ok || !data.success) throw new Error(data.error || "Could not find routes."); setRoutes(data.routes || []); setRecommended(data.recommended_route_id); setSelected(data.recommended_route_id); setAppliedProfile(data.health_profile || null); } catch (reason) { setError(reason.message); } finally { setLoading(false); } };
-  const active = routes.find((route) => route.route_id === selected); const profileName = appliedProfile || PROFILES.find(([id]) => id === profile)?.[1];
-  return <div className="min-h-screen bg-[#f4f7f2] text-[#17352b]"><header className="border-b border-[#dbe7df] bg-[#fbfdf9] px-5 py-4"><div className="mx-auto flex max-w-[1400px] items-center justify-between"><div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-xl bg-[#168b62] text-white">*</div><div><h1 className="font-display text-lg font-bold">AeroMobility</h1><p className="text-[11px] font-bold uppercase tracking-[.16em] text-[#71827a]">AI + AQI + Smart Routes</p></div></div><p className="text-sm font-bold text-[#168b62]">● Live</p></div></header><main className="mx-auto max-w-[1400px] p-5 md:p-8"><div className="grid gap-5 lg:grid-cols-[380px_minmax(0,1fr)]"><form onSubmit={find} className="rounded-2xl border border-[#dbe7df] bg-white p-5 shadow-sm"><p className="text-xs font-bold uppercase tracking-[.16em] text-[#168b62]">Plan your journey</p><label className="mt-5 block text-xs font-bold text-[#52685e]">From<StationPicker label="origin" text={from} setText={(text) => { setFrom(text); setFromPoint(null); }} choose={pick(setFrom, setFromPoint)} /></label><label className="mt-4 block text-xs font-bold text-[#52685e]">To<StationPicker label="destination" text={to} setText={(text) => { setTo(text); setToPoint(null); }} choose={pick(setTo, setToPoint)} /></label><label className="mt-4 block text-xs font-bold text-[#52685e]">Health profile<select value={profile} onChange={(event) => setProfile(event.target.value)} className="mt-1.5 w-full rounded-xl border border-[#cfddd5] bg-[#fbfdfb] px-3.5 py-3 text-sm">{PROFILES.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label><button type="button" onClick={locate} className="mt-4 w-full rounded-xl border border-[#cbdcd2] px-4 py-2.5 text-sm font-bold text-[#267253]">Use my location</button><button disabled={loading} className="mt-3 w-full rounded-xl bg-[#168b62] px-4 py-3 text-sm font-bold text-white disabled:opacity-50">{loading ? "Analyzing routes..." : "Find routes"}</button>{error && <p className="mt-3 rounded-xl bg-[#fff1ef] p-3 text-xs font-bold text-[#b64d42]">{error}</p>}</form><section className="relative min-h-[460px] overflow-hidden rounded-2xl border border-[#dbe7df] bg-[#dce9df] shadow-sm"><div ref={el} className="absolute inset-0" />{!ready && <div className="absolute inset-0 grid place-items-center bg-[#e7f0e8] p-6 text-center"><p className="rounded-xl bg-white p-4 text-sm font-bold">Map connection needed</p></div>}<div className="absolute left-4 top-4 rounded-xl bg-white/95 px-4 py-3 shadow"><p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#789087]">Map</p><p className="font-bold">AQI + Traffic</p></div></section></div><section className="mt-7"><div className="mb-3 flex items-end justify-between"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#789087]">Route options</p><h2 className="font-display text-2xl font-bold">Health-aware routes: {profileName}</h2></div><span className="rounded-full bg-[#e3f4eb] px-3 py-1 text-xs font-bold text-[#16714f]">{routes.length} analyzed</span></div><div className="grid gap-4 lg:grid-cols-3">{routes.map((route) => <Route key={route.route_id} route={route} recommended={route.route_id === recommended} selected={route.route_id === selected} choose={() => setSelected(route.route_id)} />)}</div></section><section className="mt-7 grid gap-4 md:grid-cols-3"><Info title="Current AQI" main={value(active?.aqi?.average_aqi)} sub={active?.aqi?.aqi_category || "After analysis"} /><Info title="Weather" main="Live data" sub="Current conditions" /><Info title="AQI Forecast" main="24 Hours" sub="Prediction available" /></section></main></div>;
-}
-
-function Route({ route, recommended, selected, choose }) { const aqi = route.aqi || {}; return <button onClick={choose} className={`rounded-2xl border bg-white p-5 text-left ${selected ? "border-[#168b62] ring-1 ring-[#168b62]" : "border-[#dbe7df]"}`}><div className="flex justify-between gap-2"><span className="text-xs font-bold uppercase text-[#168b62]">{recommended ? "Recommended" : "Route option"}</span><span className="text-xs font-bold text-[#267253]">{route.route_type}</span></div><h3 className="mt-3 font-display text-lg font-bold">{route.route_id}</h3><p className="mt-1 text-sm font-bold text-[#52685e]">{value(route.duration_in_traffic_minutes, " min")} · {value(route.distance_km, " km")}</p><div className="mt-4 grid grid-cols-2 gap-2 text-xs"><Info title="AQI" main={value(aqi.average_aqi)} /><Info title="Traffic" main={route.traffic_level || "--"} /><Info title="Peak AQI" main={value(aqi.maximum_aqi)} /><Info title="Score" main={value(route.score)} /></div>{recommended && <p className="mt-4 border-t border-[#edf2ee] pt-3 text-xs font-semibold text-[#52685e]">{route.recommendation_reason}</p>}</button>; }
-function Info({ title, main, sub }) { return <div className="rounded-2xl border border-[#dbe7df] bg-white p-4"><p className="text-[10px] font-bold uppercase tracking-wide text-[#789087]">{title}</p><p className="mt-1 font-display text-xl font-bold text-[#168b62]">{main}</p>{sub && <p className="mt-1 text-xs font-semibold text-[#60776c]">{sub}</p>}</div>; }

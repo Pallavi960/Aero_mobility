@@ -330,11 +330,19 @@ def predict_next_24_hours(
     # -----------------------------------------------------
 
     station_data = df[
-        df["StationId"] == station_id
+        df["StationId"].astype(str).str.strip().str.lower() == str(station_id).strip().lower()
     ].copy()
 
     if station_data.empty:
+        # Try finding by substring or first available station
+        available = df["StationId"].dropna().unique()
+        matched = [sid for sid in available if str(station_id).lower() in str(sid).lower() or str(sid).lower() in str(station_id).lower()]
+        fallback_id = matched[0] if matched else (available[0] if len(available) > 0 else None)
+        if fallback_id is not None:
+            station_data = df[df["StationId"] == fallback_id].copy()
+            station_id = fallback_id
 
+    if station_data.empty:
         return {
             "success": False,
             "error": f"Station {station_id} not found."

@@ -1,0 +1,23 @@
+# Python Virtual Environments
+venv/
+.venv/
+env/
+
+# Bytecode & Caches
+__pycache__/
+*.py[cod]
+
+# Local Environment Secrets
+.env
+.env.*
+!.env.example
+
+# Large Datasets
+data/*.csv
+*.csv
+
+# Logs & Databases
+*.log
+*.sqlite
+*.sqlite3
+*.db
