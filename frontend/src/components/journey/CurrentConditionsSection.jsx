@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import MetricCard from "../common/MetricCard";
 import { WEATHER_API, AIR_QUALITY_API } from "../../constants/appConstants";
 import { weatherCondition } from "../../utils/formatters";
+import { notificationService } from "../../services/notificationService";
 
-export default function CurrentConditionsSection({ point }) {
+export default function CurrentConditionsSection({ point, userKey, healthProfile, originName }) {
   const [conditions, setConditions] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -49,6 +50,16 @@ export default function CurrentConditionsSection({ point }) {
 
     return () => ctrl.abort();
   }, [point?.latitude, point?.longitude]);
+
+  useEffect(() => {
+    if (!conditions || !userKey) return;
+    notificationService.evaluateEnvironmentalData(userKey, {
+      weather: conditions.weather,
+      airQuality: conditions.airQuality,
+      healthProfile,
+      originName: originName || point?.station_name,
+    });
+  }, [conditions, userKey, healthProfile, originName, point?.station_name]);
 
   const w = conditions?.weather;
   const a = conditions?.airQuality;

@@ -1,11 +1,13 @@
 import React from "react";
 import InteractiveMap from "../map/InteractiveMap";
 import JourneyPlannerForm from "../journey/JourneyPlannerForm";
+import SavedPlacesSection from "../journey/SavedPlacesSection";
 import RouteCard from "../journey/RouteCard";
 import SelectedRouteSummary from "../journey/SelectedRouteSummary";
 import CurrentConditionsSection from "../journey/CurrentConditionsSection";
 import AqiForecastSection from "../journey/AqiForecastSection";
 import JourneyInsightSection from "../journey/JourneyInsightSection";
+import RecommendationInsight from "../journey/RecommendationInsight";
 
 export default function HomeScreen({
   origin,
@@ -25,7 +27,9 @@ export default function HomeScreen({
   loadingRoutes,
   routeError,
   mapsLoaded,
+  currentUser,
   onFindRoutes,
+  onSelectQuickJourney,
   onUseLocation,
 }) {
   const currentRoutes = routesData?.routes || [];
@@ -34,28 +38,43 @@ export default function HomeScreen({
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 pb-24 space-y-6">
-      {/* ── TOP SECTION: 2-COLUMN GRID (PLANNER ON LEFT, GOOGLE MAP ON RIGHT) ── */}
+      {/* ── TOP SECTION: 2-COLUMN GRID (PLANNER & SAVED PLACES ON LEFT, GOOGLE MAP ON RIGHT) ── */}
       <div className="flex flex-col lg:flex-row items-stretch gap-5">
-        {/* LEFT COLUMN: JOURNEY PLANNER FORM */}
-        <JourneyPlannerForm
-          origin={origin}
-          setOrigin={setOrigin}
-          originText={originText}
-          setOriginText={setOriginText}
-          destination={destination}
-          setDestination={setDestination}
-          destinationText={destinationText}
-          setDestinationText={setDestinationText}
-          healthProfile={healthProfile}
-          setHealthProfile={setHealthProfile}
-          loadingRoutes={loadingRoutes}
-          routeError={routeError}
-          onFindRoutes={onFindRoutes}
-          onUseLocation={onUseLocation}
-        />
+        {/* LEFT COLUMN: JOURNEY PLANNER FORM + SAVED PLACES */}
+        <div className="w-full lg:w-[440px] xl:w-[480px] shrink-0 flex flex-col gap-5">
+          <JourneyPlannerForm
+            origin={origin}
+            setOrigin={setOrigin}
+            originText={originText}
+            setOriginText={setOriginText}
+            destination={destination}
+            setDestination={setDestination}
+            destinationText={destinationText}
+            setDestinationText={setDestinationText}
+            healthProfile={healthProfile}
+            setHealthProfile={setHealthProfile}
+            loadingRoutes={loadingRoutes}
+            routeError={routeError}
+            onFindRoutes={onFindRoutes}
+            onUseLocation={onUseLocation}
+          />
+
+          <SavedPlacesSection
+            user={currentUser}
+            onSelectQuickJourney={onSelectQuickJourney}
+            onSetOrigin={(st) => {
+              setOrigin(st);
+              setOriginText(st.station_name || st.name);
+            }}
+            onSetDestination={(st) => {
+              setDestination(st);
+              setDestinationText(st.station_name || st.name);
+            }}
+          />
+        </div>
 
         {/* RIGHT COLUMN: FULLY WORKING GOOGLE MAP */}
-        <div className="flex-1 min-w-0 h-[380px] lg:h-auto min-h-[380px] lg:min-h-[480px]">
+        <div className="flex-1 min-w-0 h-[460px] lg:h-auto min-h-[460px] lg:min-h-[580px]">
           <InteractiveMap
             routes={currentRoutes}
             recommendedId={recommendedRouteId}
@@ -95,6 +114,14 @@ export default function HomeScreen({
             </span>
           </div>
 
+          {/* SMART "WHY THIS ROUTE?" RECOMMENDATION INSIGHT */}
+          <RecommendationInsight
+            routes={currentRoutes}
+            recommendedId={recommendedRouteId}
+            healthProfile={healthProfile}
+            appliedProfileName={routesData?.health_profile}
+          />
+
           {/* 2. ROUTE OPTIONS */}
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -123,7 +150,12 @@ export default function HomeScreen({
 
           {/* 4. CURRENT CONDITIONS & 5. 24-HOUR AQI FORECAST */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <CurrentConditionsSection point={origin} />
+            <CurrentConditionsSection
+              point={origin}
+              userKey={currentUser?.id || currentUser?.email || "guest"}
+              healthProfile={healthProfile}
+              originName={origin?.station_name || origin?.name}
+            />
             <AqiForecastSection
               stationId={origin?.station_id || "site_301"}
               stationName={origin?.station_name || "Origin Station"}

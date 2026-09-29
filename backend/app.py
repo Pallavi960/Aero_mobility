@@ -8,6 +8,7 @@ from routes.route_routes import route_bp
 from routes.history_routes import history_bp
 from routes.auth_routes import auth_bp
 from routes.chat_routes import chat_bp
+from routes.places_routes import places_bp
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -29,6 +30,7 @@ app.register_blueprint(aqi_bp)
 app.register_blueprint(history_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(chat_bp)
+app.register_blueprint(places_bp)
 
 # Attempt MongoDB connection at startup (non-fatal if unavailable)
 with app.app_context():
@@ -49,5 +51,6 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=5000,
-        debug=True
+        debug=True,
+        use_reloader=False,
     )

@@ -19,7 +19,7 @@ export default function JourneyPlannerForm({
   onUseLocation,
 }) {
   return (
-    <div className="w-full lg:w-[440px] xl:w-[480px] shrink-0 flex flex-col justify-between rounded-3xl border border-[#d0e5d8] bg-white p-5 sm:p-6 shadow-sm">
+    <div className="w-full shrink-0 flex flex-col justify-between rounded-3xl border border-[#d0e5d8] bg-white p-5 sm:p-6 shadow-sm">
       <div>
         <div className="mb-4">
           <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#e8f7ee] text-[#168b62] border border-[#c4e9d3] mb-1.5">

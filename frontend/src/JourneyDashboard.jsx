@@ -93,6 +93,17 @@ export default function JourneyDashboard({ user: initialUser, onLogout, initialT
     }
   };
 
+  // Quick Journey shortcut handler from Saved Places
+  const handleQuickJourney = (fromStation, toStation) => {
+    if (!fromStation?.latitude || !toStation?.latitude) return;
+    setOrigin(fromStation);
+    setDestination(toStation);
+    setOriginText(fromStation.station_name || fromStation.name || "Origin");
+    setDestinationText(toStation.station_name || toStation.name || "Destination");
+
+    handleFindRoutes(fromStation, toStation, healthProfile);
+  };
+
   // Location Autodetect
   const handleUseLocation = () => {
     if (!navigator.geolocation) {
@@ -182,7 +193,9 @@ export default function JourneyDashboard({ user: initialUser, onLogout, initialT
             loadingRoutes={loadingRoutes}
             routeError={routeError}
             mapsLoaded={mapsLoaded}
+            currentUser={currentUser}
             onFindRoutes={handleFindRoutes}
+            onSelectQuickJourney={handleQuickJourney}
             onUseLocation={handleUseLocation}
           />
         )}
