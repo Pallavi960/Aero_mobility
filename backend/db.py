@@ -31,7 +31,7 @@ def get_db():
         return _db
 
     load_dotenv(override=True)
-    uri = os.getenv("MONGODB_URI", "mongodb://127.0.0.1:27017/aeromobility")
+    uri = (os.getenv("MONGODB_URI") or "mongodb://127.0.0.1:27017/aeromobility").strip()
     db_name = uri.rstrip("/").split("/")[-1].split("?")[0] or "aeromobility"
 
     try:
