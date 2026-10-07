@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request
 from werkzeug.security import check_password_hash, generate_password_hash
 from pymongo.errors import DuplicateKeyError
 
-from db import get_db
+from db import get_db, get_db_error
 from services.scoring_service import HEALTH_PROFILES
 
 auth_bp = Blueprint("auth_bp", __name__, url_prefix="/api/auth")
@@ -65,7 +65,8 @@ def register():
 
     users = user_collection()
     if users is None:
-        return jsonify({"error": "Account service is unavailable. Start MongoDB and try again."}), 503
+        err = get_db_error() or "Start MongoDB and try again."
+        return jsonify({"error": f"Database unavailable: {err}"}), 503
 
     document = {
         "name": name,
@@ -93,7 +94,8 @@ def login():
 
     users = user_collection()
     if users is None:
-        return jsonify({"error": "Account service is unavailable. Start MongoDB and try again."}), 503
+        err = get_db_error() or "Start MongoDB and try again."
+        return jsonify({"error": f"Database unavailable: {err}"}), 503
 
     document = users.find_one({"email": email})
     if not document or not check_password_hash(document.get("password_hash", ""), password):
