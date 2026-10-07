@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { API, GOOGLE_MAPS_KEY, PROFILES } from "./constants/appConstants";
 import { useGoogleMaps } from "./hooks/useGoogleMaps";
+import { stationFromNearestAqiResponse } from "./utils/mapUtils";
 import { HeaderNavbar, MobileBottomNav } from "./components/common/Navbar";
 import HomeScreen from "./components/screens/HomeScreen";
 import HistoryScreen from "./components/screens/HistoryScreen";
@@ -116,8 +117,8 @@ export default function JourneyDashboard({ user: initialUser, onLogout, initialT
         try {
           const res = await fetch(`${API}/api/aqi/nearest?latitude=${latitude}&longitude=${longitude}`);
           const data = await res.json();
-          if (data.success && data.nearest_station) {
-            const st = data.nearest_station;
+          const st = stationFromNearestAqiResponse(data);
+          if (st) {
             setOrigin(st);
             setOriginText(`${st.station_name} (Current Location)`);
           } else {

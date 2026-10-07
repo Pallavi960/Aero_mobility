@@ -46,6 +46,7 @@ backend/data/*.csv
 *.db
 
 # Logs & Temporary Files
+*.zip
 *.log
 *.tmp
 *.temp

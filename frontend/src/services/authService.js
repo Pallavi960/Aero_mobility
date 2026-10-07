@@ -12,10 +12,19 @@ async function request(path, credentials, persistSession = true) {
       body: JSON.stringify(credentials),
     });
   } catch {
-    throw new Error("Could not reach the authentication service. Please try again.");
+    throw new Error(
+      "Could not reach the server. Make sure the Flask backend is running on port 5000."
+    );
   }
   const data = await response.json().catch(() => ({}));
-  if (!response.ok || !data.user) throw new Error(data.error || "Authentication failed. Check your details and try again.");
+  if (!response.ok || !data.user) {
+    throw new Error(
+      data.error ||
+        (response.status === 401
+          ? "Incorrect email or password. Please try again."
+          : "Authentication failed. Check your details and try again.")
+    );
+  }
   if (persistSession) sessionStorage.setItem(SESSION_KEY, JSON.stringify({ user: data.user }));
   return data.user;
 }

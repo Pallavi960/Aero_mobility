@@ -2,7 +2,12 @@ from flask import Blueprint, request, jsonify
 
 from services.aqi_service import get_nearest_station_aqi, search_stations
 from services.open_meteo_service import get_current_environmental_data
-from services.prediction_service import predict_next_24_hours
+
+try:
+    from services.prediction_service import predict_next_24_hours
+    PREDICTION_AVAILABLE = True
+except Exception:
+    PREDICTION_AVAILABLE = False
 
 
 aqi_bp = Blueprint(
@@ -79,6 +84,12 @@ def nearest_aqi():
 
 @aqi_bp.route("/predict", methods=["GET"])
 def predict_aqi():
+
+    if not PREDICTION_AVAILABLE:
+        return jsonify({
+            "success": False,
+            "error": "AQI prediction is not available in this deployment."
+        }), 503
 
     station_id = request.args.get("station_id")
 

@@ -25,14 +25,21 @@ def get_db():
     if _db is not None:
         return _db
 
+    load_dotenv(override=True)
     uri = os.getenv("MONGODB_URI", "mongodb://127.0.0.1:27017/aeromobility")
     db_name = uri.rstrip("/").split("/")[-1].split("?")[0] or "aeromobility"
 
     try:
         from pymongo import MongoClient, DESCENDING
-        from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
-        _client = MongoClient(uri, serverSelectionTimeoutMS=3000)
+        kwargs = {"serverSelectionTimeoutMS": 10000}
+        try:
+            import certifi
+            kwargs["tlsCAFile"] = certifi.where()
+        except ImportError:
+            pass
+
+        _client = MongoClient(uri, **kwargs)
         # Force a connection check
         _client.admin.command("ping")
         _db = _client[db_name]
@@ -40,8 +47,9 @@ def get_db():
         # Ensure index on createdAt descending for history queries
         _db["trip_history"].create_index([("createdAt", DESCENDING)])
 
-        logger.info("MongoDB connected: %s / %s", uri, db_name)
+        logger.info("MongoDB connected successfully: %s", db_name)
     except Exception as exc:
+        print(f"\n[MongoDB Connection Error]: {exc}\n")
         logger.warning("MongoDB unavailable – history will not be saved. %s", exc)
         _db = None
 

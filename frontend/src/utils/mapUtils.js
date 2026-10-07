@@ -27,3 +27,22 @@ export function decodePolyline(encoded = "") {
   }
   return points;
 }
+
+/**
+ * Map /api/aqi/nearest payloads onto a station the planner can use.
+ * The backend returns `station`; older clients looked for `nearest_station`.
+ */
+export function stationFromNearestAqiResponse(data) {
+  if (!data || data.success === false) return null;
+  const station = data.station || data.nearest_station;
+  if (!station || station.latitude == null || station.longitude == null) return null;
+  return {
+    station_id: station.station_id,
+    station_name: station.station_name,
+    city: station.city,
+    state: station.state,
+    latitude: station.latitude,
+    longitude: station.longitude,
+    distance_km: station.distance_km,
+  };
+}
