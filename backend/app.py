@@ -15,12 +15,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 app.logger.setLevel(logging.INFO)
 
-_frontend_url = os.getenv("FRONTEND_URL", "")
-_allowed_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
-if _frontend_url:
-    _allowed_origins.append(_frontend_url)
-
-CORS(app, origins=_allowed_origins)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 @app.route("/api/health", methods=["GET"])
