@@ -4,60 +4,34 @@ from functools import lru_cache
 import joblib
 import numpy as np
 import pandas as pd
-import tensorflow as tf
 
-from keras.initializers import GlorotUniform
-from keras.layers import Dense
+try:
+    import tensorflow as tf
+    from keras.initializers import GlorotUniform
+    from keras.layers import Dense
 
-from config.settings import (
-    MODEL_PATH,
-    FEATURE_COLUMNS_PATH,
-    FEATURE_SCALER_PATH,
-    TARGET_SCALER_PATH,
-    MODEL_CONFIG_PATH,
-    AQI_DATA_PATH,
-    HISTORY_HOURS,
-    FORECAST_HOURS,
-)
+    @classmethod
+    def _compatible_glorot_from_config(cls, config):
+        config = dict(config)
+        config.pop("input_axes", None)
+        config.pop("output_axes", None)
+        return cls(**config)
 
+    GlorotUniform.from_config = _compatible_glorot_from_config
 
-# =========================================================
-# KERAS COMPATIBILITY
-# =========================================================
-# The saved .keras model was created with a slightly
-# different Keras version. These patches remove old
-# configuration parameters that the current Keras version
-# does not recognize.
-# =========================================================
+    _original_dense_from_config = Dense.from_config
 
-@classmethod
-def _compatible_glorot_from_config(cls, config):
-    config = dict(config)
+    @classmethod
+    def _compatible_dense_from_config(cls, config):
+        config = dict(config)
+        config.pop("quantization_config", None)
+        return _original_dense_from_config(config)
 
-    # Remove parameters not supported by current Keras
-    config.pop("input_axes", None)
-    config.pop("output_axes", None)
-
-    return cls(**config)
-
-
-GlorotUniform.from_config = _compatible_glorot_from_config
-
-
-_original_dense_from_config = Dense.from_config
-
-
-@classmethod
-def _compatible_dense_from_config(cls, config):
-    config = dict(config)
-
-    # Remove parameter not supported by current Keras
-    config.pop("quantization_config", None)
-
-    return _original_dense_from_config(config)
-
-
-Dense.from_config = _compatible_dense_from_config
+    Dense.from_config = _compatible_dense_from_config
+    TF_AVAILABLE = True
+except Exception:
+    tf = None
+    TF_AVAILABLE = False
 
 
 # =========================================================
@@ -306,6 +280,11 @@ def predict_next_24_hours(
     Generate a 24-hour AQI forecast for a monitoring
     station using the trained GRU model.
     """
+    if not TF_AVAILABLE:
+        return {
+            "success": False,
+            "error": "AQI prediction model unavailable in this deployment."
+        }
 
     # -----------------------------------------------------
     # Load model and preprocessing resources

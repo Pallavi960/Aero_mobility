@@ -37,29 +37,26 @@ def get_route_aqi(route_points):
 
         station_id = station_result["station"]["station_id"]
 
-        # Get next 24-hour GRU prediction
+        # Get next 24-hour GRU prediction or fallback to station AQI
         prediction_result = predict_next_24_hours(
             station_id
         )
 
-        if not prediction_result["success"]:
-            continue
-
-        predictions = prediction_result["forecast"]
-
-        if not predictions:
-            continue
-
-        predicted_values = [
-            item["predicted_aqi"]
-            for item in predictions
-        ]
-
-        average_predicted_aqi = (
-            sum(predicted_values) / len(predicted_values)
-        )
-
-        maximum_predicted_aqi = max(predicted_values)
+        if prediction_result.get("success") and prediction_result.get("forecast"):
+            predictions = prediction_result["forecast"]
+            predicted_values = [
+                item["predicted_aqi"]
+                for item in predictions
+            ]
+            average_predicted_aqi = (
+                sum(predicted_values) / len(predicted_values)
+            )
+            maximum_predicted_aqi = max(predicted_values)
+        else:
+            station_info = station_result.get("station", {})
+            st_aqi = float(station_info.get("latest_aqi") or station_info.get("aqi") or 120.0)
+            average_predicted_aqi = st_aqi
+            maximum_predicted_aqi = st_aqi * 1.15
 
         point_results.append({
             "point_index": index + 1,
