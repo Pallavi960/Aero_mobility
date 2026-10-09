@@ -1,18 +1,18 @@
 # AeroMobilityAI
 
-**AI-Powered Environmental Intelligence System for Air Quality Prediction and Smart Mobility Recommendations**
+### AI-Powered Environmental Intelligence for Healthier, Smarter Travel
 
 
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
-[![React](https://img.shields.io/badge/react-18.3-61dafb)](https://react.dev/)
-[![TensorFlow](https://img.shields.io/badge/tensorflow-keras-orange)](https://www.tensorflow.org/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A full-stack Progressive Web Application (PWA) that combines real-time air quality monitoring, 24-hour AQI forecasting using deep learning, and intelligent route recommendations to help users make health-conscious travel decisions.
 
----
+\
 
-## 📋 Table of Contents
+
+AeroMobilityAI is a full-stack environmental intelligence application that combines air quality forecasting, interactive maps, and pollution-aware route recommendations to help users make more informed travel decisions.
+
+The project explores how machine learning and environmental data can complement traditional navigation by considering not only travel time and distance, but also potential exposure to air pollution.
+
+## Table of Contents
 
 - [Overview](#overview)
 - [Live Demo](#live-demo)
@@ -22,1060 +22,616 @@ A full-stack Progressive Web Application (PWA) that combines real-time air quali
 - [System Architecture](#system-architecture)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
-- [Installation & Setup](#installation--setup)
-- [Environment Variables](#environment-variables)
-- [API Endpoints](#api-endpoints)
+- [Installation and Setup](#installation-and-setup)
+- [Environment Configuration](#environment-configuration)
+- [API Overview](#api-overview)
 - [Deployment](#deployment)
-- [Database & Security](#database--security)
-- [External APIs & Limitations](#external-apis--limitations)
-- [PWA Installation](#pwa-installation)
+- [Database and Security](#database-and-security)
+- [External APIs and Limitations](#external-apis-and-limitations)
+- [Progressive Web App](#progressive-web-app)
 - [Troubleshooting](#troubleshooting)
 - [Future Enhancements](#future-enhancements)
 - [Contributing](#contributing)
 - [License](#license)
+- [Author](#author)
 
----
+## Overview
 
-## 🌟 Overview
+Air pollution is a major environmental concern, particularly in urban areas where air quality can vary significantly across locations and throughout the day.
 
-AeroMobilityAI is an environmental intelligence platform that empowers users to navigate urban environments while minimizing exposure to air pollution. The system leverages a GRU-based deep learning model trained on historical air quality data to predict AQI levels up to 24 hours in advance, integrated with real-time route planning and health-aware recommendation algorithms.
+Traditional navigation systems primarily focus on travel duration and distance. AeroMobilityAI explores an additional consideration: environmental conditions along a journey.
 
-**Problem Statement:** Urban air pollution poses significant health risks, especially for vulnerable populations with respiratory conditions, cardiovascular disease, or age-related sensitivities. Traditional navigation systems optimize for time and distance but ignore environmental factors.
+The application combines historical air quality data, machine learning-based AQI forecasting, environmental information, and route analysis to provide pollution-aware travel recommendations.
 
-**Solution:** AeroMobilityAI provides:
-- Real-time air quality monitoring at 1000+ stations across India
-- 24-hour AQI forecasts using deep learning (GRU neural networks)
-- Multi-route analysis with AQI scoring for each path
-- Health-profile-based route recommendations (General, Respiratory, Cardiovascular, Children, Elderly)
-- Interactive mapping with pollution hotspot visualization
-- Conversational AI assistant for journey planning and environmental insights
+### Project Objectives
 
----
+- Forecast Air Quality Index (AQI) for the next 24 hours.
+- Present environmental information in an accessible interface.
+- Compare route options using pollution exposure and travel-related factors.
+- Support health-aware recommendations through configurable user profiles.
+- Maintain user profiles and journey history through backend and database integration.
+- Explore the use of AI in environmental intelligence and smart mobility.
 
-## 🚀 Live Demo
+## Live Demo
 
-**Frontend (PWA):** [https://your-vercel-deployment-url.vercel.app](https://your-vercel-deployment-url.vercel.app)
+**Live Application:** [Open AeroMobilityAI](YOUR_VERCEL_DEPLOYMENT_URL)
 
-> **Note:** Replace the URL above with your actual Vercel deployment URL. The backend Flask API is currently configured for local development or requires separate deployment infrastructure.
+**GitHub Repository:** [View Source Code](YOUR_GITHUB_REPOSITORY_URL)
 
----
+> Replace these placeholders with the actual public URLs. The live frontend and backend may have separate deployment requirements. Availability of individual features depends on the configuration of the deployed services and their external APIs.
 
-## ✨ Key Features
+## Key Features
 
-### 🤖 AI-Powered AQI Forecasting
-- **24-hour forecasting** using GRU (Gated Recurrent Unit) neural networks
-- **72-hour historical input window** for accurate temporal pattern recognition
-- **65 engineered features** including meteorological data, temporal cycles, and station-specific characteristics
-- **Test performance:** MAE: 35.32, RMSE: 49.43, R²: 0.863
+### 1. AI-Powered AQI Forecasting
 
-### 🗺️ Smart Route Recommendations
-- **Multi-route analysis** using Google Maps API with real-time traffic data
-- **AQI-aware scoring** that evaluates average and peak pollution exposure along each route
-- **Health profile customization** with specialized weighting for vulnerable populations
-- **Interactive map visualization** with color-coded route segments based on AQI levels
+- Forecasts AQI for the next 24 hours using a trained GRU model.
+- Uses a historical sequence of 72 hours as input.
+- Processes engineered features representing historical environmental measurements and temporal patterns.
+- Presents forecast information to support environmental awareness and journey planning.
 
-### 🏥 Health-Conscious Design
-- **5 health profiles:** General, Respiratory Issues, Cardiovascular Disease, Children, Elderly
-- **Dynamic scoring algorithm** that balances travel time, pollution exposure, and health sensitivity
-- **Real-time environmental data** including PM2.5, PM10, NO₂, SO₂, CO, O₃, UV index, and weather conditions
+### 2. Pollution-Aware Route Recommendations
 
-### 💬 Conversational AI Assistant
-- **Natural language journey planning** powered by xAI Grok API
-- **Context-aware recommendations** based on current conditions, forecast data, and user health profile
-- **Multi-turn conversation** with persistent chat history
+- Integrates mapping and route information.
+- Evaluates route options using available AQI information.
+- Considers average and peak pollution levels along evaluated route points.
+- Incorporates travel duration, traffic information, and health-profile-based scoring where supported by available data.
+- Helps users compare routes using environmental as well as travel-related factors.
 
-### 📱 Progressive Web App
-- **Installable** on mobile and desktop devices
-- **Offline-capable** with service worker caching
-- **Responsive design** optimized for all screen sizes
-- **Native app-like experience** with fast loading and smooth interactions
+### 3. Health-Aware Recommendations
 
-### 👤 User Profile & History
-- **Secure authentication** with email/password and bcrypt hashing
-- **Journey history tracking** with MongoDB persistence
-- **Saved places** for quick access to frequent destinations
-- **Personalized recommendations** based on user health profile and preferences
+The application includes health-profile categories intended to support different user needs:
 
----
+- General
+- Respiratory sensitivity
+- Cardiovascular sensitivity
+- Children
+- Elderly users
 
-## 🛠️ Technology Stack
+These profiles influence route scoring and recommendations according to the implemented configuration.
 
-### Frontend
-- **React 18.3** - Modern component-based UI library
-- **Vite 5.4** - Fast build tool and development server
-- **Tailwind CSS 3.4** - Utility-first CSS framework
-- **Google Maps JavaScript API** - Interactive mapping and route visualization
-- **Vite PWA Plugin** - Service worker and manifest generation
+**Note:** Recommendations are intended for environmental awareness and travel planning. They are not medical advice and should not be treated as a guarantee of health or safety.
 
-### Backend
-- **Flask 3.1** - Lightweight Python web framework
-- **TensorFlow/Keras** - Deep learning model inference
-- **NumPy & Pandas** - Data preprocessing and feature engineering
-- **scikit-learn 1.7** - Feature scaling and model evaluation
-- **PyMongo 4.10** - MongoDB database client
+### 4. Environmental and Weather Information
 
-### Machine Learning
-- **Model Architecture:** Gated Recurrent Unit (GRU) neural network
-- **Framework:** TensorFlow/Keras
-- **Training Data:** 350,000+ historical AQI records from Indian monitoring stations
-- **Features:** 65 engineered features (meteorological, temporal, categorical)
-- **Loss Function:** Mean Squared Error (MSE)
+The application integrates environmental information from supported data sources, which may include:
 
-### External APIs
-- **Google Maps API** - Route planning, geocoding, distance matrix
-- **TomTom Traffic API** - Real-time traffic data
-- **Open-Meteo API** - Weather and air quality data (PM2.5, PM10, gases, UV index)
-- **xAI Grok API** - Conversational AI assistant
-- **SerpAPI** (optional) - Search-based environmental insights
+- Air Quality Index
+- PM2.5 and PM10
+- Other supported air pollutants
+- Temperature and humidity
+- Weather conditions
+- UV index, where available
 
-### Database & Storage
-- **MongoDB** - User profiles, journey history, saved places
-- **Local file storage** - Pre-trained model artifacts (`.keras`, `.joblib`)
+The exact data displayed depends on source availability, location coverage, and API configuration.
 
-### Deployment
-- **Vercel** - Frontend hosting with automatic deployments
-- **Flask development server** - Backend (local or cloud deployment required)
+### 5. Interactive Map
 
----
+- Displays map and route information through the configured mapping service.
+- Supports location-based journey planning.
+- Presents route information and pollution-related insights where data is available.
 
-## 🧠 Machine Learning Approach
+### 6. User Profiles and Journey History
 
-### Dataset
-- **Source:** Historical AQI data from 1000+ monitoring stations across India
-- **Size:** 350,000+ records with hourly granularity
-- **Features:** PM2.5, PM10, NO₂, SO₂, CO, O₃, temperature, humidity, wind speed/direction, weather conditions, temporal cycles
-- **Target Variable:** AQI (Air Quality Index)
+The backend and MongoDB integration support user-related application data, including profile information and journey history.
 
-### Data Preprocessing
-1. **Temporal sorting** by station and timestamp
-2. **Feature engineering:**
-   - Cyclical encoding (hour, day of week, month, wind direction)
-   - One-hot encoding for weather conditions and station IDs
-   - Normalization using StandardScaler
-3. **Sequence creation:** 72-hour input windows → 24-hour forecast horizons
-4. **Train/test split:** 80/20 with temporal ordering preserved
+Saved places and other personalized features should be used only where the corresponding functionality is enabled in the deployed application.
 
-### Model Architecture
+### 7. Progressive Web App
+
+The frontend includes PWA-related configuration and assets. Installation and offline capabilities depend on the deployed manifest, service worker, browser support, and caching configuration.
+
+## Technology Stack
+
+The following technologies are documented in the project materials. Check the current dependency files for the exact installed versions.
+
+| Component          | Technologies                            |
+| ------------------ | --------------------------------------- |
+| Frontend           | React, Vite, JavaScript                 |
+| Styling            | Tailwind CSS                            |
+| Backend            | Python, Flask                           |
+| Machine Learning   | TensorFlow, Keras                       |
+| Data Processing    | NumPy, Pandas, scikit-learn             |
+| Database           | MongoDB, PyMongo                        |
+| Mapping            | Google Maps Platform                    |
+| Environmental Data | Open-Meteo and other configured sources |
+| Traffic            | TomTom, where configured                |
+| Conversational AI  | xAI API, where configured               |
+| Frontend Hosting   | Vercel                                  |
+
+## Machine Learning Approach
+
+AeroMobilityAI uses a time-series forecasting approach to predict future AQI values from historical environmental observations.
+
+### Forecasting Workflow
+
+1. Load historical air quality and associated environmental data.
+2. Organize observations by timestamp and station.
+3. Prepare and engineer the model input features.
+4. Apply the preprocessing transformations expected by the trained model.
+5. Construct a sequence of 72 historical hourly steps.
+6. Pass the sequence to the trained GRU model.
+7. Generate a forecast covering the next 24 hours.
+8. Transform predictions back to the appropriate AQI scale for downstream display and analysis.
+
+### Model Configuration
+
+| Parameter               | Description                                         |
+| ----------------------- | --------------------------------------------------- |
+| Model architecture      | GRU (Gated Recurrent Unit)                          |
+| Historical input window | 72 hours                                            |
+| Forecast horizon        | 24 hours                                            |
+| Feature count           | 65 engineered features, as documented for the model |
+| Framework               | TensorFlow/Keras                                    |
+| Preprocessing           | Saved feature and target scalers                    |
+| Prediction output       | Hourly AQI forecast                                 |
+
+### Model Artifacts
+
+The project documentation identifies the following model-related artifacts:
+
+- `aqi_gru_24h_current.keras` — trained forecasting model
+- `feature_scaler.joblib` — feature preprocessing scaler
+- `target_scaler.joblib` — target preprocessing scaler
+- `feature_columns.json` — expected feature ordering
+- `model_config.json` — model configuration metadata
+- `stations.json` — station metadata
+
+Their availability depends on the files included in the actual repository and deployment.
+
+### Model Evaluation
+
+The earlier project documentation reports the following evaluation metrics:
+
+| Metric                         | Reported Value |
+| ------------------------------ | -------------: |
+| Mean Absolute Error (MAE)      |          35.32 |
+| Root Mean Squared Error (RMSE) |          49.43 |
+| R² Score                       |          0.863 |
+
+These figures are reported project results, not independently verified performance guarantees. Before presenting them as final results, confirm that they correspond to the current model and a documented held-out evaluation dataset.
+
+AQI forecast errors should be interpreted in the context of the target scale, data quality, station coverage, and evaluation methodology.
+
+## System Architecture
+
+AeroMobilityAI follows a frontend-backend architecture.
+
+```text
+                 USER
+                   |
+                   v
+       React + Vite Frontend
+       - Journey Planner
+       - Interactive Map
+       - AQI Forecast Display
+       - User Profile and History
+                   |
+                   | HTTP / REST API
+                   v
+             Flask Backend
+                   |
+          +--------+---------+
+          |        |         |
+          v        v         v
+       AQI/ML    Route      Chat
+      Prediction Analysis   Service
+          |        |         |
+          +--------+---------+
+                   |
+          External Data APIs
+          - Mapping and Routes
+          - Weather and AQI
+          - Traffic, where configured
+          - AI Service, where configured
+                   |
+                   v
+                MongoDB
+          - User-related data
+          - Journey history
+          - Other supported records
 ```
-Input Layer: (72 timesteps, 65 features)
-  ↓
-GRU Layer (128 units, return_sequences=True)
-  ↓
-GRU Layer (64 units, return_sequences=False)
-  ↓
-Dense Layer (32 units, ReLU activation)
-  ↓
-Output Layer (24 units) - 24-hour AQI predictions
-```
 
-### Performance Metrics
-- **Mean Absolute Error (MAE):** 35.32
-- **Root Mean Squared Error (RMSE):** 49.43
-- **R² Score:** 0.863
+The actual communication flow and available services depend on the current backend implementation and deployment configuration.
 
-### Model Files
-- `aqi_gru_24h_current.keras` - Trained GRU model
-- `feature_scaler.joblib` - StandardScaler for input features
-- `target_scaler.joblib` - StandardScaler for AQI target
-- `feature_columns.json` - Feature name ordering
-- `model_config.json` - Model metadata and hyperparameters
-- `stations.json` - Station metadata for predictions
+### Example: Route Recommendation Workflow
 
----
+1. The user enters journey details and selects a health profile.
+2. The frontend sends the required request to the backend.
+3. The backend obtains route information from the configured mapping service.
+4. Environmental information is retrieved for the relevant locations when available.
+5. The route-scoring logic evaluates available pollution and travel-related information.
+6. The application returns route details and recommendations.
+7. The frontend presents the results for comparison.
+8. Journey details may be stored in MongoDB when history persistence is enabled.
 
-## 🏗️ System Architecture
+## Project Structure
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         FRONTEND (React + Vite)                 │
-│  - User Interface (Journey Planner, Map, Chat, History)        │
-│  - Google Maps API Integration                                  │
-│  - PWA Service Worker                                           │
-└────────────────┬────────────────────────────────────────────────┘
-                 │ HTTPS/REST API
-                 ↓
-┌─────────────────────────────────────────────────────────────────┐
-│                      BACKEND (Flask API)                        │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐         │
-│  │ AQI Predictor│  │ Route Scorer │  │ Chat Service │         │
-│  │   (GRU ML)   │  │   (Multi-    │  │   (xAI API)  │         │
-│  │              │  │   criteria)  │  │              │         │
-│  └──────────────┘  └──────────────┘  └──────────────┘         │
-│         ↓                  ↓                  ↓                 │
-│  ┌──────────────────────────────────────────────────┐         │
-│  │           External API Orchestration              │         │
-│  │  - Google Maps  - TomTom  - Open-Meteo           │         │
-│  └──────────────────────────────────────────────────┘         │
-└────────────────┬────────────────────────────────────────────────┘
-                 │
-                 ↓
-┌─────────────────────────────────────────────────────────────────┐
-│                      DATABASE (MongoDB)                         │
-│  - User Profiles & Authentication                               │
-│  - Journey History                                              │
-│  - Saved Places                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
+The following is a simplified representation of the documented repository layout. Some files may differ in the current version.
 
-### Request Flow Example: Route Planning
-1. **User** enters origin, destination, and health profile in frontend
-2. **Frontend** calls `/api/routes/find` with coordinates and health profile
-3. **Backend** fetches multiple route options from Google Maps API
-4. **Backend** samples points along each route and queries AQI data from Open-Meteo
-5. **Backend** applies health-profile-weighted scoring algorithm
-6. **Backend** saves journey to MongoDB history collection
-7. **Frontend** displays ranked routes with interactive map visualization
-8. **User** selects optimal route based on AQI, traffic, and travel time
-
----
-
-## 📁 Project Structure
-
-```
+```text
 aero_mobility/
 ├── backend/
-│   ├── app.py                          # Flask application entry point
-│   ├── requirements.txt                # Python dependencies
-│   ├── vercel.json                     # Vercel deployment configuration
-│   ├── db.py                           # MongoDB connection handler
+│   ├── app.py
+│   ├── requirements.txt
+│   ├── db.py
 │   ├── config/
-│   │   └── settings.py                 # Application configuration
 │   ├── models/
-│   │   ├── aqi_model/                  # Pre-trained ML model artifacts
-│   │   │   ├── aqi_gru_24h_current.keras
-│   │   │   ├── feature_scaler.joblib
-│   │   │   ├── target_scaler.joblib
-│   │   │   ├── feature_columns.json
-│   │   │   ├── model_config.json
-│   │   │   └── stations.json
-│   │   ├── trip_history.py             # Journey history data model
-│   │   └── saved_places.py             # Saved places data model
+│   │   └── aqi_model/
 │   ├── routes/
-│   │   ├── aqi_routes.py               # AQI and prediction endpoints
-│   │   ├── route_routes.py             # Route finding and ranking
-│   │   ├── history_routes.py           # Journey history CRUD
-│   │   ├── auth_routes.py              # User authentication
-│   │   ├── chat_routes.py              # AI assistant chat
-│   │   └── places_routes.py            # Saved places CRUD
+│   │   ├── aqi_routes.py
+│   │   ├── route_routes.py
+│   │   ├── history_routes.py
+│   │   ├── auth_routes.py
+│   │   ├── chat_routes.py
+│   │   └── places_routes.py
 │   ├── services/
-│   │   ├── prediction_service.py       # ML model inference
-│   │   ├── aqi_service.py              # AQI data retrieval
-│   │   ├── route_service.py            # Google Maps integration
-│   │   ├── route_aqi_service.py        # Route-level AQI calculation
-│   │   ├── scoring_service.py          # Health-profile-based ranking
-│   │   ├── chat_service.py             # xAI Grok integration
-│   │   ├── open_meteo_service.py       # Open-Meteo API client
-│   │   ├── traffic_service.py          # TomTom traffic data
-│   │   ├── weather_service.py          # Weather data aggregation
-│   │   └── gps_service.py              # Coordinate validation
 │   ├── utils/
-│   │   ├── helpers.py                  # Utility functions
-│   │   └── mongo.py                    # MongoDB utilities
 │   └── data/
-│       └── cleaned_aqi_data.csv        # Historical training dataset
 │
 ├── frontend/
-│   ├── index.html                      # HTML entry point
-│   ├── package.json                    # Node.js dependencies
-│   ├── vite.config.js                  # Vite build configuration
-│   ├── postcss.config.js               # PostCSS/Tailwind configuration
-│   ├── public/                         # Static assets
-│   │   ├── pwa-192x192.png
-│   │   ├── pwa-512x512.png
-│   │   └── background_image.jpg
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── public/
 │   └── src/
-│       ├── AeroChat.jsx                # Main application component
-│       ├── AuthGate.jsx                # Authentication wrapper
-│       ├── aqiVisuals.js               # AQI color/category utilities
+│       ├── AeroChat.jsx
+│       ├── AuthGate.jsx
+│       ├── aqiVisuals.js
 │       └── components/
-│           ├── auth/
-│           │   └── AuthFlow.jsx        # Login/register forms
-│           ├── chat/
-│           │   └── ChatAssistant.jsx   # AI chat interface
-│           ├── common/
-│           │   ├── Navbar.jsx          # Navigation header
-│           │   ├── MetricCard.jsx      # Reusable metric display
-│           │   ├── StationPicker.jsx   # Station search dropdown
-│           │   └── NotificationDropdown.jsx
-│           ├── journey/
-│           │   ├── JourneyPlannerForm.jsx
-│           │   ├── RouteCard.jsx       # Individual route display
-│           │   ├── SelectedRouteSummary.jsx
-│           │   ├── AqiForecastSection.jsx
-│           │   ├── CurrentConditionsSection.jsx
-│           │   ├── SavedPlacesSection.jsx
-│           │   └── RecommendationInsight.jsx
-│           ├── map/
-│           │   └── InteractiveMap.jsx  # Google Maps integration
-│           └── screens/
-│               ├── HomeScreen.jsx      # Main journey planner
-│               ├── HistoryScreen.jsx   # Past trips
-│               ├── AboutScreen.jsx     # Project information
-│               └── DedicatedMapScreen.jsx
 │
 ├── .gitignore
-├── .env.example                        # Environment variable template
-└── README.md                           # This file
+└── README.md
 ```
 
----
+Refer to the actual repository for the complete and current directory structure.
 
-## 📋 Prerequisites
+## Prerequisites
 
-- **Python 3.8 or higher** with pip
-- **Node.js 16 or higher** with npm
-- **MongoDB 4.4 or higher** (local or cloud instance)
-- **API Keys:**
-  - Google Maps API (with Places, Maps JavaScript, Directions, Geocoding APIs enabled)
-  - TomTom API key
-  - xAI API key (for Grok chat assistant)
-  - SerpAPI key (optional, for search-based insights)
+For local development, you may need:
 
----
+- Python compatible with the backend dependencies.
+- Node.js and npm compatible with the frontend.
+- MongoDB locally or a MongoDB Atlas database.
+- Required external API credentials for the features you intend to run.
+- The model artifacts and supporting preprocessing files required for AQI prediction.
 
-## 🔧 Installation & Setup
+Check `backend/requirements.txt` and `frontend/package.json` before selecting runtime versions.
+
+## Installation and Setup
 
 ### 1. Clone the Repository
+
+Replace the repository URL with the actual GitHub URL.
+
 ```bash
-git clone https://github.com/your-username/aero_mobility.git
+git clone YOUR_GITHUB_REPOSITORY_URL
 cd aero_mobility
 ```
 
-### 2. Backend Setup
+### 2. Set Up the Backend
 
-#### Install Python Dependencies
 ```bash
 cd backend
 python -m venv venv
+```
 
-# On Windows:
+Activate the virtual environment on Windows:
+
+```powershell
 venv\Scripts\activate
+```
 
-# On macOS/Linux:
+On macOS or Linux:
+
+```bash
 source venv/bin/activate
+```
 
+Install the dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
-#### Configure Backend Environment
-```bash
-# Copy the example environment file
-cp .env.example .env
+Configure the backend environment variables according to the requirements of the existing code.
 
-# Edit .env and add your API keys (see Environment Variables section)
-```
+Start the backend using the entry point and command supported by the repository. If the Flask application is configured for direct execution, the command may be:
 
-#### Start MongoDB
-```bash
-# If using local MongoDB:
-mongod --dbpath /path/to/your/data/directory
-
-# Or use MongoDB Atlas cloud connection string in .env
-```
-
-#### Run the Backend Server
 ```bash
 python app.py
 ```
 
-The backend API will be available at `http://localhost:5000`
+The default local address may be `http://localhost:5000`; confirm the actual host and port in the backend configuration.
 
-### 3. Frontend Setup
+### 3. Set Up the Frontend
 
-#### Install Node.js Dependencies
+Open a second terminal:
+
 ```bash
-cd ../frontend
+cd frontend
 npm install
 ```
 
-#### Configure Frontend Environment
-```bash
-# Copy the example environment file
-cp .env.example .env
+Configure the frontend environment according to the existing Vite configuration.
 
-# Edit .env and add your Google Maps API key
-```
+Start the development server:
 
-#### Run the Development Server
 ```bash
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:5173`
+Vite commonly serves local applications at `http://localhost:5173`, unless the configuration or available port changes.
 
-### 4. Verify Installation
+### 4. Verify the Application
 
-1. Open `http://localhost:5173` in your browser
-2. Create a user account using the registration form
-3. Try the "Use My Location" button or enter coordinates manually
-4. Check that routes appear on the map with AQI scores
+- Open the local frontend URL.
+- Confirm that the backend is running and reachable.
+- Test registration and login if configured.
+- Check whether the map loads.
+- Test AQI forecasting and route recommendations.
+- Confirm that journey history is stored and retrieved as expected.
+
+Some features require valid external API credentials, a reachable database, and compatible machine learning dependencies.
+
+## Environment Configuration
+
+The backend and frontend may require different environment variables. Consult the actual application configuration to identify which ones are required.
+
+Possible backend variable names documented for this project include:
+
+| Variable              | Purpose                                     |
+| --------------------- | ------------------------------------------- |
+| `MONGODB_URI`         | MongoDB connection string                   |
+| `GOOGLE_MAPS_API_KEY` | Server-side mapping requests, if used       |
+| `TOMTOM_API_KEY`      | Traffic API access, if configured           |
+| `XAI_API_KEY`         | Conversational AI integration, if enabled   |
+| `XAI_MODEL`           | Configured AI model, if supported           |
+| `SERPAPI_KEY`         | Optional search integration, if implemented |
+
+The frontend may use:
+
+| Variable                   | Purpose                              |
+| -------------------------- | ------------------------------------ |
+| `VITE_GOOGLE_MAPS_API_KEY` | Browser-side Google Maps integration |
+
+These names are based on the project documentation. Confirm them against the current code before configuring the application.
+
+### Important Security Notes
+
+- Never commit actual `.env` files, passwords, database connection strings, or secret API keys.
+- Never place server-side secrets in frontend environment variables.
+- Vite variables prefixed with `VITE_` are included in client-side code and must be treated as public.
+- Use a browser-restricted Google Maps key for browser-based mapping.
+- Store backend secrets in the environment settings of the relevant hosting service.
+- Do not share screenshots or logs that expose credentials.
+
+This README does not require creating a new environment file.
+
+## API Overview
+
+The backend documentation describes the following endpoint groups. Confirm the current routes, HTTP methods, authentication requirements, and payload formats in the actual Flask code before relying on these examples.
+
+| Endpoint                           | Purpose                               |
+| ---------------------------------- | ------------------------------------- |
+| `GET /api/health`                  | Backend health check                  |
+| `POST /api/auth/register`          | User registration                     |
+| `POST /api/auth/login`             | User login                            |
+| `GET /api/aqi/stations`            | Station search                        |
+| `GET /api/aqi/environment/current` | Current environmental data            |
+| `GET /api/aqi/nearest`             | Nearest station information           |
+| `GET /api/aqi/predict`             | AQI forecasting                       |
+| `GET /api/routes/find`             | Route analysis and recommendations    |
+| `GET /api/history`                 | Journey history retrieval             |
+| `GET /api/history/{trip_id}`       | Retrieve a specific journey           |
+| `DELETE /api/history/{trip_id}`    | Delete a journey                      |
+| `DELETE /api/history`              | Clear journey history                 |
+| `GET /api/places`                  | Retrieve saved places, if supported   |
+| `POST /api/places`                 | Add a saved place, if supported       |
+| `PUT /api/places/{place_id}`       | Update a saved place, if supported    |
+| `DELETE /api/places/{place_id}`    | Delete a saved place, if supported    |
+| `POST /api/chat`                   | Conversational AI request, if enabled |
+
+### Example Request
+
+A documented AQI forecast request may use the following format:
+
+```http
+GET /api/aqi/predict?station_id=STATION_ID
+```
+
+The response format depends on the implementation and may contain forecast timestamps, predicted AQI values, and status information.
+
+For actual request and response schemas, refer to the corresponding Flask route handlers and service implementations.
+
+## Deployment
+
+### Frontend: Vercel
+
+The frontend is deployed on Vercel.
+
+The existing Vercel project configuration should be preserved. Do not change its root directory, build settings, environment variables, or deployment configuration merely to update this documentation.
+
+For a Vite frontend, common build settings are:
+
+| Setting          | Typical Value   |
+| ---------------- | --------------- |
+| Framework        | Vite            |
+| Build command    | `npm run build` |
+| Output directory | `dist`          |
+| Install command  | `npm install`   |
+
+Use the settings already configured in your Vercel project if they differ from these defaults.
+
+### Backend: Flask
+
+The Flask backend requires a compatible Python runtime and access to any required model artifacts, database, and external APIs.
+
+If the backend is hosted separately, configure the frontend to use the actual deployed backend URL. A frontend deployed on Vercel cannot access a developer's local `127.0.0.1:5000` backend from a recruiter's device.
+
+TensorFlow/Keras compatibility, model size, startup time, and serverless execution limits should be evaluated before choosing a backend hosting platform.
+
+**Deployment status:** A public frontend URL does not, by itself, confirm that every backend-dependent feature is working online. Verify authentication, predictions, route recommendations, and history on the live application.
+
+## Database and Security
+
+MongoDB is used for application data such as user-related information and journey history, depending on the enabled features.
+
+### Recommended Practices
+
+- Use authenticated database connections.
+- Configure database access permissions appropriately.
+- Validate and sanitize incoming user data.
+- Hash passwords using a suitable password-hashing algorithm.
+- Ensure users can access only their own private records.
+- Avoid exposing detailed server errors to clients.
+- Restrict cross-origin requests to the intended frontend domains in production.
+- Monitor database storage, connections, and request volume.
+- Avoid unnecessarily storing repeated journey records or sensitive location history.
+
+Database capacity and connection limits depend on the selected MongoDB deployment and plan. Review the current provider limits rather than assuming that a free tier will support unlimited traffic.
+
+## External APIs and Limitations
+
+AeroMobilityAI depends on third-party services for some of its mapping, environmental, traffic, and conversational AI features.
+
+| Service              | Intended Use                                   |
+| -------------------- | ---------------------------------------------- |
+| Google Maps Platform | Map display and route-related services         |
+| Open-Meteo           | Weather and air-quality data, where configured |
+| TomTom               | Traffic information, where configured          |
+| xAI API              | Conversational AI, where enabled               |
+| SerpAPI              | Optional search integration, where implemented |
+| MongoDB              | Persistent application data                    |
+
+### API Usage Considerations
+
+- API access may require credentials, billing, or account activation.
+- Providers can impose usage quotas, rate limits, licensing terms, and other restrictions.
+- Pricing and free-tier allowances can change.
+- A successful frontend deployment does not guarantee that third-party APIs are available.
+- Missing credentials, exhausted quotas, network errors, or provider outages may cause individual features to fail.
+- Use API-key restrictions and usage monitoring wherever supported.
+
+Check the official provider documentation for current pricing, usage limits, and service conditions.
+
+## Progressive Web App
+
+The project includes PWA-related assets and configuration.
+
+Where supported by the deployed build, a PWA can be installed from a compatible browser and may provide an app-like interface.
+
+### Installation
+
+**Desktop**
+
+1. Open the deployed website in a compatible browser.
+2. Look for the browser's install option when available.
+3. Follow the browser instructions to install the application.
+
+**Android**
+
+1. Open the website in a compatible browser.
+2. Open the browser menu.
+3. Select the install or Add to Home screen option if available.
+
+**iOS**
+
+1. Open the website in Safari.
+2. Open the Share menu.
+3. Select Add to Home Screen if available.
+
+### Offline Behavior
+
+Offline functionality depends on the service worker and caching strategy actually configured in the project. Cached interface assets do not necessarily mean that live maps, AQI predictions, authentication, or route recommendations will work without an internet connection.
+
+## Troubleshooting
+
+### The Map Does Not Load
+
+- Verify that the browser-side API key is configured correctly.
+- Check that the required mapping APIs are enabled.
+- Confirm that key restrictions permit the deployed website's domain.
+- Inspect the browser console for API errors.
+- Check the provider's quota and billing status.
+
+### AQI Forecasting Fails
+
+- Verify that the required model artifacts are present.
+- Check the Python environment and TensorFlow/Keras compatibility.
+- Confirm that the input features match the expected feature order and shape.
+- Check backend logs for model-loading or prediction errors.
+
+### MongoDB Connection Fails
+
+- Check the configured connection string.
+- Verify database credentials and network access.
+- Confirm that the database deployment is available.
+- Check backend logs without exposing credentials.
+
+### Frontend Loads but Backend Features Fail
+
+- Confirm that the Flask backend is deployed and reachable.
+- Verify the configured API base URL.
+- Check CORS configuration.
+- Inspect browser network requests and backend logs.
+- Confirm that the deployed backend has all required environment variables.
+
+### AI Assistant Does Not Respond
+
+- Verify the AI provider configuration if the feature is enabled.
+- Check API access, quotas, and provider availability.
+- Review backend logs for relevant errors without sharing secret values.
+
+## Future Enhancements
+
+Potential future improvements include:
+
+- More comprehensive AQI forecast evaluation and model experimentation.
+- Improved handling of missing or delayed environmental data.
+- Caching and optimization for frequently requested data.
+- Enhanced monitoring and error reporting.
+- Expanded route comparison and environmental insights.
+- Additional accessibility and usability improvements.
+- More comprehensive automated testing.
+- Further PWA improvements, where appropriate.
+
+These are potential enhancements and should not be interpreted as currently implemented features.
+
+## Contributing
+
+Contributions and suggestions are welcome.
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make focused changes.
+4. Test your changes.
+5. Submit a pull request describing the improvements.
+
+Please avoid committing credentials, private data, or local environment files.
+
+## License
+
+Add the project's actual license information here.
+
+If the repository contains a `LICENSE` file, refer to that file and ensure the license named here matches it. Do not assume a license applies merely because it was mentioned in an earlier draft.
+
+## Author
+
+**Pallavi Verulkar**
+
+- GitHub: [Pallavi960](https://github.com/Pallavi960)
+
+## Acknowledgments
+
+AeroMobilityAI builds on open-source software and external data services. Acknowledgments include the relevant contributors and providers whose tools and datasets are used in the actual implementation.
+
+## Project Status
+
+**Project:** AeroMobilityAI
+**Focus:** Machine learning, environmental intelligence, and smart mobility
+**Frontend hosting:** Vercel
+**Development status:** Refer to the current repository and live application for the latest status.
 
 ---
 
-## 🔐 Environment Variables
-
-### Backend `.env` Configuration
-
-```bash
-# Google Maps API Key (required for route finding, geocoding)
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
-
-# TomTom API Key (required for traffic data)
-TOMTOM_API_KEY=your_tomtom_api_key_here
-
-# MongoDB Connection String (required for user auth and history)
-# Local example:
-MONGODB_URI=mongodb://127.0.0.1:27017/aeromobility
-# Cloud example (MongoDB Atlas):
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/aeromobility
-
-# xAI API Key (required for chat assistant)
-XAI_API_KEY=your_xai_api_key_here
-XAI_MODEL=grok-2-latest
-
-# SerpAPI Key (optional, for search-based environmental insights)
-SERPAPI_KEY=your_serpapi_key_here
-```
-
-### Frontend `.env` Configuration
-
-```bash
-# Google Maps API Key (required for map display)
-# IMPORTANT: Use a separate browser-restricted key for frontend
-VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
-```
-
-> **Security Note:** Never commit actual API keys to version control. The `.env` files are excluded via `.gitignore`. For production, use environment variable management services provided by your hosting platform.
-
----
-
-## 📡 API Endpoints
-
-### Health Check
-```http
-GET /api/health
-```
-**Response:**
-```json
-{
-  "success": true,
-  "message": "AQI backend is running"
-}
-```
-
-### Authentication
-
-#### Register User
-```http
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "age": 30,
-  "health_profile": "general",
-  "password": "secure_password"
-}
-```
-
-#### Login
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "john@example.com",
-  "password": "secure_password"
-}
-```
-
-### AQI Endpoints
-
-#### Search Stations
-```http
-GET /api/aqi/stations?query=delhi&limit=10
-```
-**Response:**
-```json
-{
-  "success": true,
-  "stations": [
-    {
-      "station_id": "DPCC_01",
-      "station_name": "Delhi - Anand Vihar",
-      "city": "Delhi",
-      "state": "Delhi"
-    }
-  ]
-}
-```
-
-#### Get Current Environmental Data
-```http
-GET /api/aqi/environment/current?latitude=28.5355&longitude=77.3910
-```
-**Response:**
-```json
-{
-  "success": true,
-  "latitude": 28.5355,
-  "longitude": 77.391,
-  "current": {
-    "pm2_5": 78.5,
-    "pm10": 142.3,
-    "aqi": 156,
-    "temperature": 28.4,
-    "humidity": 65,
-    "uv_index": 5.2
-  }
-}
-```
-
-#### Get Nearest Station AQI
-```http
-GET /api/aqi/nearest?latitude=28.7041&longitude=77.1025
-```
-
-#### Predict 24-Hour AQI
-```http
-GET /api/aqi/predict?station_id=DPCC_01
-```
-**Response:**
-```json
-{
-  "success": true,
-  "station_id": "DPCC_01",
-  "history_hours": 72,
-  "forecast_hours": 24,
-  "last_historical_datetime": "2024-03-15T14:00:00",
-  "forecast": [
-    {
-      "datetime": "2024-03-15T15:00:00",
-      "predicted_aqi": 145.23
-    },
-    {
-      "datetime": "2024-03-15T16:00:00",
-      "predicted_aqi": 138.67
-    }
-  ]
-}
-```
-
-### Route Planning
-
-#### Find Routes with AQI Analysis
-```http
-GET /api/routes/find?origin_lat=28.7041&origin_lng=77.1025&destination_lat=28.5355&destination_lng=77.3910&health_profile=respiratory&origin_name=Connaught%20Place&destination_name=Noida
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "recommended_route_id": "route_0",
-  "health_profile": "Respiratory Issues",
-  "health_profile_key": "respiratory",
-  "scoring_weights": {
-    "aqi": 0.5,
-    "traffic": 0.3,
-    "duration": 0.2
-  },
-  "routes": [
-    {
-      "route_id": "route_0",
-      "distance_km": 18.4,
-      "duration_minutes": 32,
-      "duration_in_traffic_minutes": 45,
-      "traffic_level": "Moderate",
-      "aqi": {
-        "average_aqi": 142.5,
-        "maximum_aqi": 187.2,
-        "aqi_category": "Unhealthy",
-        "worst_point": {
-          "lat": 28.6324,
-          "lng": 77.2197,
-          "aqi": 187.2
-        },
-        "points_evaluated": 15
-      },
-      "score": 68.3,
-      "route_points": [...]
-    }
-  ]
-}
-```
-
-### Journey History
-
-#### Get Journey History
-```http
-GET /api/history?page=1&limit=20
-```
-
-#### Get Specific Trip
-```http
-GET /api/history/{trip_id}
-```
-
-#### Delete Trip
-```http
-DELETE /api/history/{trip_id}
-```
-
-#### Clear All History
-```http
-DELETE /api/history
-```
-
-### Saved Places
-
-#### List Saved Places
-```http
-GET /api/places?user_id=user@example.com
-```
-
-#### Add Saved Place
-```http
-POST /api/places
-Content-Type: application/json
-
-{
-  "user_id": "user@example.com",
-  "name": "Home",
-  "latitude": 28.7041,
-  "longitude": 77.1025
-}
-```
-
-#### Update Saved Place
-```http
-PUT /api/places/{place_id}
-Content-Type: application/json
-
-{
-  "name": "Updated Home",
-  "latitude": 28.7041,
-  "longitude": 77.1025
-}
-```
-
-#### Delete Saved Place
-```http
-DELETE /api/places/{place_id}?user_id=user@example.com
-```
-
-### Chat Assistant
-
-#### Send Message to AI Assistant
-```http
-POST /api/chat
-Content-Type: application/json
-
-{
-  "message": "What's the best time to travel from Delhi to Noida today?",
-  "context": {
-    "origin": "Delhi",
-    "destination": "Noida",
-    "health_profile": "respiratory"
-  },
-  "history": [
-    {
-      "role": "user",
-      "content": "Previous message"
-    },
-    {
-      "role": "assistant",
-      "content": "Previous response"
-    }
-  ]
-}
-```
-
----
-
-## 🚀 Deployment
-
-### Frontend Deployment (Vercel)
-
-The frontend is configured for automatic deployment to Vercel:
-
-1. **Connect Repository to Vercel:**
-   - Sign up at [vercel.com](https://vercel.com)
-   - Import your GitHub repository
-   - Select the `frontend` directory as the root
-
-2. **Configure Build Settings:**
-   - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-   - **Install Command:** `npm install`
-
-3. **Add Environment Variables in Vercel Dashboard:**
-   ```
-   VITE_GOOGLE_MAPS_API_KEY=your_browser_restricted_key
-   ```
-
-4. **Deploy:** Vercel will automatically build and deploy on every push to your main branch.
-
-### Backend Deployment Options
-
-The backend requires:
-- Python 3.8+ runtime
-- Support for TensorFlow/Keras (large ML dependencies)
-- Persistent storage for model files (~200MB)
-- MongoDB connection
-
-**Option 1: Vercel Serverless Functions**
-- The `vercel.json` is configured for Python serverless deployment
-- **Limitations:** Cold start times may be high due to TensorFlow loading
-- **Note:** The current Vercel Python runtime may not support TensorFlow; consider disabling prediction endpoints or using external ML inference service
-
-**Option 2: Cloud Platforms (Recommended)**
-- **Google Cloud Run / AWS App Runner / Azure App Service:**
-  - Containerize the Flask app with Docker
-  - Include model files in the container image
-  - Set environment variables in the platform dashboard
-  - Connect to MongoDB Atlas for database
-
-**Option 3: Traditional VPS/Dedicated Server**
-- Deploy Flask with Gunicorn + Nginx
-- Use systemd for process management
-- Configure MongoDB locally or use Atlas
-
-**Environment Variables for Production:**
-Ensure all API keys and the MongoDB connection string are set in your deployment platform's environment variable configuration, not in code.
-
----
-
-## 🔒 Database & Security
-
-### MongoDB Collections
-
-#### `users`
-```javascript
-{
-  "_id": ObjectId,
-  "name": String,
-  "email": String (unique index),
-  "age": Number,
-  "health_profile": String,
-  "password_hash": String,
-  "profile_image": String (optional)
-}
-```
-
-#### `trip_history`
-```javascript
-{
-  "_id": ObjectId,
-  "from": {
-    "name": String,
-    "latitude": Number,
-    "longitude": Number
-  },
-  "to": {
-    "name": String,
-    "latitude": Number,
-    "longitude": Number
-  },
-  "healthProfile": {
-    "id": String,
-    "name": String
-  },
-  "routeCount": Number,
-  "recommendedRoute": {
-    "routeId": String,
-    "travelTimeMinutes": Number,
-    "distanceKm": Number,
-    "aqi": Number,
-    "peakAqi": Number,
-    "aqiCategory": String,
-    "traffic": String,
-    "score": Number
-  },
-  "timestamp": Date
-}
-```
-
-#### `saved_places`
-```javascript
-{
-  "_id": ObjectId,
-  "user_id": String,
-  "name": String,
-  "latitude": Number,
-  "longitude": Number,
-  "created_at": Date
-}
-```
-
-### Security Measures
-
-1. **Password Hashing:** User passwords are hashed using `werkzeug.security.generate_password_hash` (bcrypt-based)
-2. **CORS Configuration:** Configured for cross-origin requests (adjust for production)
-3. **Input Validation:** Coordinates, email, and user inputs are validated before processing
-4. **MongoDB Indexes:** Unique index on `users.email` prevents duplicate accounts
-5. **API Key Protection:** Backend API keys are never exposed to the frontend
-6. **Error Handling:** Sensitive error details are logged but not exposed to clients
-
-**Production Recommendations:**
-- Use HTTPS for all communication
-- Implement JWT-based authentication with token expiration
-- Add rate limiting to prevent API abuse
-- Restrict CORS to specific frontend domains
-- Use MongoDB connection string with authentication
-- Rotate API keys periodically
-- Implement API key quotas and monitoring
-
----
-
-## 🌐 External APIs & Limitations
-
-### Google Maps API
-- **Endpoints Used:** Directions API, Geocoding API, Maps JavaScript API
-- **Free Tier:** $200/month credit (~40,000 route requests)
-- **Rate Limit:** 50 requests/second per API
-- **Recommendation:** Enable billing and set daily quotas to prevent unexpected charges
-
-### TomTom API
-- **Usage:** Real-time traffic data
-- **Free Tier:** 2,500 requests/day
-- **Rate Limit:** Varies by plan
-- **Fallback:** System uses Google Maps traffic data if TomTom unavailable
-
-### Open-Meteo API
-- **Usage:** Weather and modeled air quality data (PM2.5, PM10, gases, UV index)
-- **Free Tier:** Unlimited non-commercial use
-- **Rate Limit:** None specified (fair use policy)
-- **Reliability:** High availability, no authentication required
-
-### xAI Grok API
-- **Usage:** Conversational AI assistant for journey planning
-- **Pricing:** Varies by model (grok-2-latest)
-- **Rate Limit:** Depends on API tier
-- **Fallback:** Chat functionality will show error if API key is missing or quota exceeded
-
-### SerpAPI (Optional)
-- **Usage:** Search-based environmental insights (if implemented)
-- **Free Tier:** 100 searches/month
-- **Paid Plans:** Starting at $50/month for 5,000 searches
-
-### MongoDB Atlas (Cloud Database)
-- **Free Tier:** 512MB storage, shared cluster
-- **Suitable for:** Development and small-scale production
-- **Upgrade Required For:** High-traffic applications (M10+ clusters recommended)
-
----
-
-## 📱 PWA Installation
-
-AeroMobilityAI is a Progressive Web App that can be installed on devices for a native app-like experience.
-
-### Desktop Installation
-1. Visit the deployed URL in Chrome, Edge, or Safari
-2. Look for the install icon (⊕) in the address bar
-3. Click "Install AeroMobilityAI"
-4. The app will open in a standalone window
-
-### Mobile Installation (Android/iOS)
-
-**Android (Chrome):**
-1. Open the app URL in Chrome
-2. Tap the three-dot menu (⋮)
-3. Select "Add to Home screen"
-4. Confirm installation
-
-**iOS (Safari):**
-1. Open the app URL in Safari
-2. Tap the Share button (□↑)
-3. Scroll down and tap "Add to Home Screen"
-4. Confirm
-
-### PWA Features
-- **Offline Functionality:** Static assets and UI cached for offline viewing
-- **Fast Loading:** Service worker caching reduces load times
-- **App-Like Interface:** No browser UI, full-screen experience
-- **Push Notifications:** (If implemented) Real-time AQI alerts
-
----
-
-## 🐛 Troubleshooting
-
-### Backend Issues
-
-**Problem:** `ModuleNotFoundError: No module named 'tensorflow'`
-- **Solution:** Ensure TensorFlow is installed: `pip install tensorflow`
-- **Note:** TensorFlow requires significant disk space (~500MB)
-
-**Problem:** `MongoDB connection failed`
-- **Solution:** 
-  - Verify MongoDB is running: `mongod --version`
-  - Check `MONGODB_URI` in `.env` is correct
-  - For cloud MongoDB, ensure IP whitelist includes your server IP
-
-**Problem:** `AQI prediction is not available in this deployment`
-- **Solution:** This error appears when TensorFlow failed to load. Check:
-  - Python version is 3.8-3.11 (TensorFlow compatibility)
-  - Sufficient disk space for model files
-  - Model files exist in `backend/models/aqi_model/`
-
-**Problem:** Google Maps API errors (e.g., `REQUEST_DENIED`)
-- **Solution:**
-  - Enable required APIs in Google Cloud Console: Directions, Geocoding, Maps JavaScript
-  - Check API key restrictions (HTTP referrers for frontend, IP addresses for backend)
-  - Verify billing is enabled (required even for free tier)
-
-### Frontend Issues
-
-**Problem:** Map not displaying
-- **Solution:**
-  - Check `VITE_GOOGLE_MAPS_API_KEY` is set in `frontend/.env`
-  - Verify API key has Maps JavaScript API enabled
-  - Check browser console for specific error messages
-
-**Problem:** Routes not loading
-- **Solution:**
-  - Verify backend is running at the correct URL
-  - Check CORS configuration in `backend/app.py`
-  - Inspect browser Network tab for failed requests
-
-**Problem:** Chat assistant not responding
-- **Solution:**
-  - Verify `XAI_API_KEY` is set in backend `.env`
-  - Check xAI API quota and billing status
-  - Review backend logs for API error messages
-
-### Development Environment
-
-**Problem:** Vite dev server won't start
-- **Solution:**
-  - Delete `node_modules` and `package-lock.json`
-  - Run `npm install` again
-  - Check for port conflicts (default: 5173)
-
-**Problem:** Flask server crashes on startup
-- **Solution:**
-  - Check all required environment variables are set
-  - Review terminal output for specific error tracebacks
-  - Ensure MongoDB is accessible before starting Flask
-
----
-
-## 🔮 Future Enhancements
-
-The following features are planned but not yet implemented:
-
-### Planned Features
-- **Real-time AQI alerts** via push notifications when pollution exceeds thresholds
-- **Multi-modal journey planning** (walking, cycling, public transport, car) with mode-specific AQI exposure
-- **Predictive route suggestions** based on user's calendar and typical travel patterns
-- **Community reporting** of localized pollution hotspots
-- **Health impact tracking** showing cumulative pollution exposure over time
-- **Wearable device integration** for real-time heart rate and respiration monitoring
-- **Regional expansion** to support air quality data for more countries
-- **Enhanced ML models** with transformer-based architectures for improved accuracy
-- **Carbon footprint calculation** for each route with sustainability recommendations
-
-### Research & Development
-- Fine-tune GRU model with more recent data
-- Experiment with attention mechanisms for long-term forecasting
-- Incorporate satellite imagery for pollution source detection
-- Develop personalized health risk scoring using medical literature
-
-**Contributions welcome!** See the Contributing section below.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how you can help:
-
-### How to Contribute
-
-1. **Fork the repository**
-   ```bash
-   git clone https://github.com/your-username/aero_mobility.git
-   ```
-
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Make your changes**
-   - Follow existing code style and conventions
-   - Add comments for complex logic
-   - Update documentation if needed
-
-4. **Test your changes**
-   - Ensure backend tests pass (if implemented)
-   - Verify frontend builds without errors
-   - Test in multiple browsers if UI changes
-
-5. **Commit and push**
-   ```bash
-   git add .
-   git commit -m "Add: Brief description of your changes"
-   git push origin feature/your-feature-name
-   ```
-
-6. **Open a Pull Request**
-   - Describe your changes in detail
-   - Reference any related issues
-   - Wait for review and address feedback
-
-### Areas for Contribution
-
-- **Machine Learning:** Improve AQI prediction accuracy, experiment with new architectures
-- **Frontend:** Enhance UI/UX, add animations, improve mobile responsiveness
-- **Backend:** Optimize API performance, add caching, improve error handling
-- **Testing:** Write unit tests, integration tests, end-to-end tests
-- **Documentation:** Improve README, add code comments, create tutorials
-- **Accessibility:** Ensure WCAG compliance, add screen reader support
-- **Internationalization:** Add multi-language support
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [@your-username](https://github.com/your-username)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/your-profile)
-- Email: your.email@example.com
-
----
-
-## 🙏 Acknowledgments
-
-- **Indian Central Pollution Control Board (CPCB)** for air quality monitoring data
-- **Open-Meteo** for free weather and environmental APIs
-- **Google Maps Platform** for routing and geocoding services
-- **xAI** for Grok conversational AI
-- **TensorFlow** and **Keras** teams for deep learning frameworks
-- All open-source contributors whose libraries made this project possible
-
----
-
-## 📊 Project Status
-
-**Current Version:** 1.0.0  
-**Status:** Active Development  
-**Last Updated:** March 2024
-
----
-
-## 🔍 Keywords
-
-Air Quality Index, AQI Prediction, Machine Learning, GRU Neural Networks, Deep Learning, Environmental Intelligence, Smart Mobility, Route Optimization, Health-Aware Navigation, Progressive Web App, React, Flask, TensorFlow, Google Maps API, Urban Air Pollution, Respiratory Health, Real-time Environmental Monitoring
-
----
-
-**Made with ❤️ for healthier urban mobility**
-
+*Built to explore how AI and environmental data can contribute to healthier, more informed urban mobility decisions.*
