@@ -2,7 +2,7 @@
 
 **AI-Powered Environmental Intelligence System for Air Quality Prediction and Smart Mobility Recommendations**
 
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](coming soon)
+
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
 [![React](https://img.shields.io/badge/react-18.3-61dafb)](https://react.dev/)
 [![TensorFlow](https://img.shields.io/badge/tensorflow-keras-orange)](https://www.tensorflow.org/)
