@@ -11,6 +11,41 @@ auth_bp = Blueprint("auth_bp", __name__, url_prefix="/api/auth")
 EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 
 
+def validate_password_strength(password):
+    """
+    Validate password meets strength requirements.
+    Returns (is_valid, error_message).
+    """
+    if not isinstance(password, str):
+        return False, "Password must be a string."
+    
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters."
+    
+    if len(password) > 1024:
+        return False, "Password must be at most 1024 characters."
+    
+    has_upper = any(c.isupper() for c in password)
+    has_lower = any(c.islower() for c in password)
+    has_digit = any(c.isdigit() for c in password)
+    has_special = any(not c.isalnum() for c in password)
+    
+    missing = []
+    if not has_upper:
+        missing.append("one uppercase letter")
+    if not has_lower:
+        missing.append("one lowercase letter")
+    if not has_digit:
+        missing.append("one number")
+    if not has_special:
+        missing.append("one special character")
+    
+    if missing:
+        return False, f"Password must contain {', '.join(missing)}."
+    
+    return True, None
+
+
 def public_user(document):
     email = document.get("email", "")
     name = (
@@ -60,8 +95,11 @@ def register():
         return jsonify({"error": "Age must be between 1 and 120."}), 400
     if health_profile not in HEALTH_PROFILES:
         return jsonify({"error": "Choose a valid health profile."}), 400
-    if not isinstance(password, str) or len(password) < 8 or len(password) > 1024:
-        return jsonify({"error": "Password must be at least 8 characters."}), 400
+    
+    # Validate password strength
+    password_valid, password_error = validate_password_strength(password)
+    if not password_valid:
+        return jsonify({"error": password_error}), 400
 
     users = user_collection()
     if users is None:
